@@ -8,12 +8,17 @@ import matplotlib
 def f(t, y):
     # print (t,y, "kek")
     # set the relevant constants
-    I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l = x
+    C_m, g_K, g_Na, g_l, V_K, V_Na, V_l = x
+    # set external current: make sure it is 0 for large times.
+    if t <= 0.00001:
+        I_e = 1
+    else:
+        I_e = 0
     # set the variables that are to be integrated
     V, n, m, h = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h) *
-        (V - V_Na) + g_l * (V - V_l))
+    V_dot = 1/C_m * (I_e - ((g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h) *
+        (V - V_Na) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
     a_n = 0.01 * (V + 10) / ( np.exp((V+10)/10) - 1)
@@ -35,9 +40,9 @@ def f(t, y):
 # print("hello pig")
 # enter the values of the constants. Values taken from Table 3 in `Membrane Current In Nerve`
 # values are entered like: conts = [I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
-conts = [1.0, 1.0, 36, 120, 0.3, 12, -115, -10.613]
+conts = [10**(-3), 10**(-3), 10**(-3), 10**(-3), 10**(-3), 10**(-3), -10**(-3)]
 # enter intial values for V, n, m, h
-V_0 = 1
+V_0 = 10**(-9)
 n_0 = 0
 m_0 = 0
 h_0 = 0
@@ -53,7 +58,7 @@ t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 x = conts
 # solve coupled ODEs with scipy's solver
 # print("about to solve pig")
-soln = sp_int.solve_ivp(f, t_interval, y_0, 'RK45', t_points, atol=0.1, rtol=0.01)
+soln = sp_int.solve_ivp(f, t_interval, y_0, 'RK45', t_points)
 
 plt.plot(soln.t, soln.y[0, :])
 plt.show()
