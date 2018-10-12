@@ -9,14 +9,14 @@ def f(t, y, x):
     # set the relevant constants
     C_m, g_K, g_Na, g_l, V_K, V_Na, V_l = x
     # set external current: make sure it is 0 for large times.
-    if t <= 0.00001:
-        I_e = 1
+    if t <= 1:
+        I_e = 100
     else:
         I_e = 0
     # set the variables that are to be integrated
     V, n, m, h = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - ((g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h) *
+    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h *
         (V - V_Na) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
@@ -36,10 +36,10 @@ def f(t, y, x):
     return [V_dot, g_1, g_2, g_3]
 
 # enter the values of the constants. Values taken from Table 3 in `Membrane Current In Nerve`
-# values are entered like: conts = [I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
-conts = [1.0, 36, 120, 0.3, 12, -115, -10.613]
+# values are entered like: conts = [C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
+conts = [1, 36, 120, 0.3, -77, +50, -55]
 # enter intial values for V, n, m, h
-V_0 = 10**(-9)
+V_0 = 0.001
 n_0 = 0
 m_0 = 0
 h_0 = 0
@@ -47,7 +47,7 @@ y_0 = [V_0, n_0, m_0, h_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 10.0)
+t_interval = (0.0, 20.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
