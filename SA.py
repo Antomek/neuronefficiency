@@ -1,6 +1,8 @@
 import numpy as np
 import scipy as sp
 import scipy.integrate as sp_int
+import matplotlib.pyplot as plt
+import matplotlib
 
 # define function that is time derivative of voltage: f = dV/dt
 def f(t, y, x):
@@ -35,7 +37,7 @@ def f(t, y, x):
 
 # enter the values of the constants. Values taken from Table 3 in `Membrane Current In Nerve`
 # values are entered like: conts = [I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
-conts = [1.0, 1.0, 36, 120, 0.3, 12, -115, -10.613]
+conts = [1.0, 36, 120, 0.3, 12, -115, -10.613]
 # enter intial values for V, n, m, h
 V_0 = 10**(-9)
 n_0 = 0
