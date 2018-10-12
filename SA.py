@@ -5,15 +5,20 @@ import scipy.integrate as sp_int
 # define function that is time derivative of voltage: f = dV/dt
 def f(t, y, x):
     # set the relevant constants
-    I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l = x
+    C_m, g_K, g_Na, g_l, V_K, V_Na, V_l = x
+    # set external current: make sure it is 0 for large times.
+    if t <= 0.00001:
+        I_e = 1
+    else:
+        I_e = 0
     # set the variables that are to be integrated
     V, n, m, h = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h) *
-        (V - V_Na) + g_l * (V - V_l))
+    V_dot = 1/C_m * (I_e - ((g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h) *
+        (V - V_Na) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
-    a_n = 0.01 * (V + 10) / ( np.exp((V+10)/10) - 1)
+    a_n = 0.01 * (V + 10) / (np.exp((V+10)/10) - 1)
     b_n = 0.125 * np.exp(V/80)
     a_m = 0.1 * (V + 25) / (np.exp((V + 25)/10) - 1)
     b_m = 4 * np.exp(V / 18)
@@ -32,7 +37,7 @@ def f(t, y, x):
 # values are entered like: conts = [I_e, C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
 conts = [1.0, 1.0, 36, 120, 0.3, 12, -115, -10.613]
 # enter intial values for V, n, m, h
-V_0 = 0
+V_0 = 10**(-9)
 n_0 = 0
 m_0 = 0
 h_0 = 0
@@ -40,9 +45,13 @@ y_0 = [V_0, n_0, m_0, h_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 50.0)
+t_interval = (0.0, 10.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
 # solve coupled ODEs with scipy's solver
 soln = sp_int.solve_ivp(lambda t, y: f(t, y, conts), t_interval, y_0, 'RK45', t_points)
+
+# plot & show solution
+plt.plot(soln.t, soln.y[0, :])
+plt.show()
