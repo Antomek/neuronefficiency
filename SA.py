@@ -20,12 +20,12 @@ def f(t, y, x):
         (V - V_Na) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
-    a_n = 0.01 * (V + 10) / (np.exp((V+10)/10) - 1)
-    b_n = 0.125 * np.exp(V/80)
-    a_m = 0.1 * (V + 25) / (np.exp((V + 25)/10) - 1)
-    b_m = 4 * np.exp(V / 18)
-    a_h = 0.07 * np.exp(V / 20)
-    b_h = 1 / (np.exp((V + 30)/10) + 1)
+    a_n = 0.01 * (10 - V) / (np.exp((10 - V)/10) - 1)
+    b_n = 0.125 * np.exp(-V/80)
+    a_m = 0.1 * (25 - V) / (np.exp((25 - V)/10) - 1)
+    b_m = 4 * np.exp(-V / 18)
+    a_h = 0.07 * np.exp(-V / 20)
+    b_h = 1 / (np.exp((30 - V)/10) + 1)
 
     # enter the equations controlling the gating variables.
     # 'g_1' is dn/dt, 'g_2' is dm/dt, 'g_3' is dh/dt
@@ -47,7 +47,7 @@ y_0 = [V_0, n_0, m_0, h_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 20.0)
+t_interval = (0.0, 12.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
