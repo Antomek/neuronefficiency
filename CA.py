@@ -11,7 +11,7 @@ def f(t, y, x):
     C_m, g_K, g_Na, g_A, g_l, V_K, V_Na, V_A, V_l = x
     # set external current: make sure it is 0 for large times.
     if t <= 1:
-        I_e = 1
+        I_e = 10
     else:
         I_e = 0
     # set the variables that are to be integrated
@@ -26,7 +26,7 @@ def f(t, y, x):
     a_m = -0.1 * (V + 35 - 5.3) / (np.exp(-(V + 35 - 5.3)/10 - 1))
     b_m = 4 * np.exp(-(V + 60 - 5.3)/18)
     a_h = 0.07 * np.exp(-(V + 60 - 12)/20)
-    b_h = 1 / np.exp(-(V + 30 - 12)/10 + 1)
+    b_h = 1 / (np.exp(-(V + 30 - 12)/10 + 1))
 
     # equations that determine the gating variables differential equations
     tau_n = (2/3.8) / (a_n + b_n)
@@ -51,9 +51,9 @@ def f(t, y, x):
 
 # enter the values of the constants. Values taken from Table 3 in `Membrane Current In Nerve`
 # values are entered like: conts = [C_m, g_K, g_Na, g_A, g_l, V_K, V_Na, V_A, V_l]
-conts = [1, 20, 120, -47.7, 0.3, -72, +55, -75, -17]
+conts = [1, 20, 120, 47.7, 0.3, -72, +55, -75, -17]
 # enter intial values for V, n, m, h
-V_0 = -0.1
+V_0 = -50
 n_0 = 0
 m_0 = 0
 h_0 = 0

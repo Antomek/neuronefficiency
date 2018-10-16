@@ -39,7 +39,7 @@ def f(t, y, x):
 # values are entered like: conts = [C_m, g_K, g_Na, g_l, V_K, V_Na, V_l]
 conts = [1, 36, 120, 0.3, -77, +50, -55]
 # enter intial values for V, n, m, h
-V_0 = 0.001
+V_0 = -55
 n_0 = 0
 m_0 = 0
 h_0 = 0
@@ -47,7 +47,7 @@ y_0 = [V_0, n_0, m_0, h_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 12.0)
+t_interval = (0.0, 40.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
