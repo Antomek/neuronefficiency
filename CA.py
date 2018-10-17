@@ -17,7 +17,7 @@ def f(t, y, x):
     # set the variables that are to be integrated
     V, n, m, h, A, B = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)*h *
+    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)* h * \
         (V - V_Na) + g_A * (A**3) * B * (V - V_A) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
