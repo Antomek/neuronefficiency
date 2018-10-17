@@ -52,9 +52,10 @@ conts = [1, 225, 112.5, 0.25, 0.39, -24, -90, +50, -70]
 # enter intial values for V, n, m, h
 V_0 = -55
 n_0 = 0
-m_0 = 0
 h_0 = 0
-y_0 = [V_0, n_0, m_0, h_0]
+a_0 = 0
+b_0 = 0
+y_0 = [V_0, n_0, h_0, a_0, b_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
