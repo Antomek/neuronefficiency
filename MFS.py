@@ -26,7 +26,7 @@ def f(t, y, x):
     h_inf = (1 + np.exp(-(V + 58.3)/-6.7))
     tau_h = 0.5 + 14*((1 + np.exp(-(V + 60)/-12))**(-1))
     n_inf = (1 + np.exp(-(V + 12.4)/6.8))**(-1)
-    tau_n = (0.087 + 11.4 * (1 + np.exp(V + 14.6)/8.6)**(-1)) *
+    tau_n = (0.087 + 11.4 * (1 + np.exp(V + 14.6)/8.6)**(-1)) * \
             (0.087 + 11.4 * (1 + np.exp(-(V - 1.3)/18.7))**(-1))
     a_inf = (1 + np.exp(-(V + 50)/20))**(-1)
     b_inf = (1 + np.exp(-(V + 70)/-6))**(-1)
@@ -34,7 +34,7 @@ def f(t, y, x):
     tau_b = 150
 
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e + I_noise - (g_K * (n**2) * (V - V_K) + g_Na * (m_inf**3) * h *
+    V_dot = 1/C_m * (I_e + I_noise - (g_K * (n**2) * (V - V_K) + g_Na * (m_inf**3) * h * \
         (V - V_Na) + g_d * (a**3) * b * (V - V_K) + g_l * (V - V_l)))
 
     # enter the equations controlling the gating variables.
@@ -48,7 +48,7 @@ def f(t, y, x):
 
 # values are entered like: conts = [C_m, g_K, g_Na, g_l, g_d, theta_m, V_K, V_Na, V_l]
 # NB: theta_m and g_d are varied throughout the paper
-conts = [1, 36, 120, 0.3, -77, +50, -55]
+conts = [1, 225, 112.5, 0.25, 0.39, -24, -90, +50, -70]
 # enter intial values for V, n, m, h
 V_0 = -55
 n_0 = 0
