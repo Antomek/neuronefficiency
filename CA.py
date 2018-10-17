@@ -49,7 +49,6 @@ def f(t, y, x):
     # since w = [V, n, m, h] we return [V_dot, n_dot, m_dot, h_dot, A_dot, B_dot]
     return [V_dot, n_dot, m_dot, h_dot, A_dot, B_dot]
 
-# enter the values of the constants. Values taken from Table 3 in `Membrane Current In Nerve`
 # values are entered like: conts = [C_m, g_K, g_Na, g_A, g_l, V_K, V_Na, V_A, V_l]
 conts = [1, 20, 120, 47.7, 0.3, -72, +55, -75, -17]
 # enter intial values for V, n, m, h
