@@ -17,16 +17,19 @@ def f(t, y, x):
     # set the variables that are to be integrated
     V, n, m, h, A, B = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)* h * \
+    V_dot = 1/C_m * (I_e - (g_K * (n**4) * (V - V_K) + g_Na * (m**3)* h *
         (V - V_Na) + g_A * (A**3) * B * (V - V_A) + g_l * (V - V_l)))
 
     # equations governing opening/closing rates.
-    a_n = -0.01 * (V + 50 - 4.3) / (np.exp(-(V + 50 - 4.3)/10) - 1)
-    b_n = 0.125 * np.exp(-(V + 60 - 4.3)/80)
-    a_m = -0.1 * (V + 35 - 5.3) / (np.exp(-(V + 35 - 5.3)/10 - 1))
-    b_m = 4 * np.exp(-(V + 60 - 5.3)/18)
-    a_h = 0.07 * np.exp(-(V + 60 - 12)/20)
-    b_h = 1 / (np.exp(-(V + 30 - 12)/10 + 1))
+    MSHFT = -5.3
+    HSHFT = -12
+    NSHFT = -4.3
+    a_n = -0.01 * (V + 50 + NSHFT) / (np.exp(-(V + 50 + NSHFT)/10) - 1)
+    b_n = 0.125 * np.exp(-(V + 60 + NSHFT)/80)
+    a_m = -0.1 * (V + 35 + MSHFT) / (np.exp(-(V + 35 + MSHFT)/10 - 1))
+    b_m = 4 * np.exp(-(V + 60 + MSHFT)/18)
+    a_h = 0.07 * np.exp(-(V + 60 + HSHFT)/20)
+    b_h = 1 / (np.exp(-(V + 30 + HSHFT)/10 + 1))
 
     # equations that determine the gating variables differential equations
     tau_n = (2/3.8) / (a_n + b_n)
@@ -52,7 +55,7 @@ def f(t, y, x):
 # values are entered like: conts = [C_m, g_K, g_Na, g_A, g_l, V_K, V_Na, V_A, V_l]
 conts = [1, 20, 120, 47.7, 0.3, -72, +55, -75, -17]
 # enter intial values for V, n, m, h
-V_0 = -50
+V_0 = -35
 n_0 = 0
 m_0 = 0
 h_0 = 0

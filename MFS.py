@@ -12,9 +12,9 @@ def f(t, y, x):
     C_m, g_K, g_Na, g_l, g_d, theta_m, V_K, V_Na, V_l = x
     # set external current: make sure it is 0 for large times.
     if t <= 1:
-        I_e = 100
+        I_e = 1.25
     else:
-        I_e = 0
+        I_e = 1.25
     # set noise current in input
     D = 0
     I_noise = np.sqrt(2*D*np.random.normal(0, 1))
@@ -26,15 +26,15 @@ def f(t, y, x):
     h_inf = (1 + np.exp(-(V + 58.3)/-6.7))
     tau_h = 0.5 + 14*((1 + np.exp(-(V + 60)/-12))**(-1))
     n_inf = (1 + np.exp(-(V + 12.4)/6.8))**(-1)
-    tau_n = (0.087 + 11.4 * (1 + np.exp(V + 14.6)/8.6)**(-1)) * \
-            (0.087 + 11.4 * (1 + np.exp(-(V - 1.3)/18.7))**(-1))
+    tau_n = ((0.087 + 11.4 * ((1 + np.exp(V + 14.6)/8.6)**(-1))) *
+            (0.087 + 11.4 * ((1 + np.exp(-(V - 1.3)/18.7))**(-1))))
     a_inf = (1 + np.exp(-(V + 50)/20))**(-1)
     b_inf = (1 + np.exp(-(V + 70)/-6))**(-1)
     tau_a = 2
     tau_b = 150
 
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e + I_noise - (g_K * (n**2) * (V - V_K) + g_Na * (m_inf**3) * h * \
+    V_dot = 1/C_m * (I_e + I_noise - (g_K * (n**2) * (V - V_K) + g_Na * (m_inf**3) * h *
         (V - V_Na) + g_d * (a**3) * b * (V - V_K) + g_l * (V - V_l)))
 
     # enter the equations controlling the gating variables.
@@ -47,10 +47,10 @@ def f(t, y, x):
     return [V_dot, n_dot, h_dot, a_dot, b_dot]
 
 # values are entered like: conts = [C_m, g_K, g_Na, g_l, g_d, theta_m, V_K, V_Na, V_l]
-# NB: theta_m and g_d are varied throughout the paper
-conts = [1, 225, 112.5, 0.25, 0.39, -24, -90, +50, -70]
+# NB: theta_m is not given by parameters from supplemental information in paper
+conts = [1, 225, 112.5, 0.25, 0.39, -28, -90, +50, -70]
 # enter intial values for V, n, m, h
-V_0 = -55
+V_0 = -10**(-9)
 n_0 = 0
 h_0 = 0
 a_0 = 0
