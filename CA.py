@@ -50,9 +50,9 @@ def I_l(V): return g_l * (V - E_l)
 def f(t, y):
     # set external current: make sure it is 0 for large times.
     if 4 < t <= 5:
-        I_e = 50
+        I_e = 6
     else:
-        I_e = 0
+        I_e = 6
     # set the variables that are to be integrated
     V, n, m, h, A, B = y
     # define DV/dt ('_dot' denotes time differentiation)
@@ -67,9 +67,8 @@ def f(t, y):
     # since y = [V, n, m, h, A, B] we return [V_dot, n_dot, m_dot, h_dot, A_dot, B_dot]
     return [V_dot, n_dot, m_dot, h_dot, A_dot, B_dot]
 
-# enter intial values for V, n, m, h
-# enter intial values for V, n, m, h
-V_0 = -74
+# enter intial values for V, n, m, h, A, B
+V_0 = -70
 n_0 = 0.1
 m_0 = 0.004
 h_0 = 0.986
