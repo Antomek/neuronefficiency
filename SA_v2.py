@@ -57,7 +57,7 @@ numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
 # solve coupled ODEs with scipy's solver
-soln = sp_int.solve_ivp(f, t_interval, y_0, 'RK45', t_points)
+soln = sp_int.solve_ivp(f, t_interval, y_0, 'BDF')
 
 V = soln.y[0, :]
 n = soln.y[1, :]

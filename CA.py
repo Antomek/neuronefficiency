@@ -50,9 +50,11 @@ def I_l(V): return g_l * (V - E_l)
 def f(t, y):
     # set external current: make sure it is 0 for large times.
     if 4 < t <= 5:
-        I_e = 6
+        I_e = 30
+    elif 5 < t <= 23:
+        I_e = 30
     else:
-        I_e = 6
+        I_e = 0
     # set the variables that are to be integrated
     V, n, m, h, A, B = y
     # define DV/dt ('_dot' denotes time differentiation)
@@ -78,12 +80,12 @@ y_0 = [V_0, n_0, m_0, h_0, A_0, B_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 100.0)
+t_interval = (0.0, 40.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
 # solve coupled ODEs with scipy's solver
-soln = sp_int.solve_ivp(f, t_interval, y_0, 'RK45', t_points)
+soln = sp_int.solve_ivp(f, t_interval, y_0, 'BDF')
 
 V = soln.y[0, :]
 n = soln.y[1, :]
