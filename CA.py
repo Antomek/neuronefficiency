@@ -71,11 +71,11 @@ def f(t, y):
 
 # enter intial values for V, n, m, h, A, B
 V_0 = -70
-n_0 = 0.1
-m_0 = 0.004
-h_0 = 0.986
-A_0 = 0.509
-B_0 = 0.426
+n_0 = n_inf(V_0)
+m_0 = m_inf(V_0)
+h_0 = h_inf(V_0)
+A_0 = A_inf(V_0)
+B_0 = B_inf(V_0)
 y_0 = [V_0, n_0, m_0, h_0, A_0, B_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.

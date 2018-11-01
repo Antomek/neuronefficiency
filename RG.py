@@ -8,12 +8,20 @@ import matplotlib
 
 # Set up the constants
 C_m  = 1 # membrane capacitance (uF/cm^2)
-g_Na = 120 # maximum conductances (mS/cm^2)
-g_K  = 36
-g_l  = 0.3
-E_Na = 50 # reversal potentials (mV)
-E_K  = -77
-E_l  = -55
+g_NaF = 40 # maximum conductances (mS/cm^2). NB: in paper cells are modelled as spheres, conductances given in nS.
+g_CaL = 0.831
+g_Kdr = 6.79
+g_KA = 0.523
+g_KC = 0.573
+g_H = 0.172
+g_l = 1.167
+E_NaF = 55 # reversal potentials (mV)
+E_Kdr  = -90
+E_CaL  = 80
+E_H = -42
+E_KA = -90
+E_KC = -90
+E_l = -65
 
 # auxiliary equations as defined in paper
 def exp(V, A, B, C, V_0): return A * np.exp(B * (V - V_0)) + C
@@ -35,13 +43,43 @@ A_Kdr_bh, B_Kdr_bh, V0_Kdr_bh = [5.5 * (10**(-3)), -0.0807, -44]
 A_CaL_am, B_CaL_am, V0_CaL_am = [8, -0.072, 5]
 A_CaL_bm, B_CaL_bm, V0_CaL_bm = [0.1, 0.2, -8.9]
 A_CaL_ah, B_CaL_ah, V0_CaL_ah = [0.025, -0.05, -60]
-A_CaL_bh, B_CaL_bh, C_Cal_bh, V0_CaL_bh = [-0.025, -0.05, 0.025, -60]
+A_CaL_bh, B_CaL_bh, C_CaL_bh, V0_CaL_bh = [-0.025, -0.05, 0.025, -60]
+A_H_am, B_H_am, V0_H_am = [4 * (10**(-3)), -0.0909, -75]
+A_H_bm, B_H_bm, V0_H_bm = [4 * (10**(-3)), 0.0909, -75]
+A_KA_taum, B_KA_taum, C_KA_taum, V0_KA_taum = [0.41, -1/42.8, 0.167, -43.5]
+A_KA_minf, B_KA_minf, V0_KA_minf = [1, -1/19.8, -46.7]
+A_KA_hinf, B_KA_hinf, V0_KA_hinf = [1, 1/8.4, -78.8]
+A_KC_am, B_KC_am, C_KC_am = [12.5, -0.085, 1.5 * 10**(-3)]
+A_KC_bm, B_KC_bm, C_KC_bm = [7.5, -0.077, 150 * 10**(-6)]
 
+# define functions that determine gating dynamics. 'am' is alpha fn for m, 'bh' is beta fn for h etc.
+def am_NaF(V): return exp(V, A_NaF_am, B_NaF_am, 0, V0_NaF_am)
+def bm_NaF(V): return exp(V, A_NaF_bm, B_NaF_bm, 0, V0_NaF_bm)
+def ah_NaF(V): return exp(V, A_NaF_ah, B_NaF_ah, 0, V0_NaF_ah)
+def bh_NaF(V): return exp(V, A_NaF_bh, B_NaF_bh, 0, V0_NaF_bh)
+def am_Kdr(V): return exp(V, A_Kdr_am, B_Kdr_am, 0, V0_Kdr_am)
+def bm_Kdr(V): return exp(V, A_Kdr_bm, B_Kdr_bm, 0, V0_Kdr_bm)
+def ah_Kdr(V): return exp(V, A_Kdr_ah, B_Kdr_ah, C_Kdr_ah, V0_Kdr_ah)
+def bh_Kdr(V): return sig(V, A_Kdr_bh, B_Kdr_bh, 0, V0_Kdr_bh)
+def am_CaL(V): return sig(V, A_CaL_am, B_CaL_am, 0, V0_CaL_am)
+def bm_CaL(V): return lin(V, A_CaL_bm, B_CaL_bm, 0, V0_CaL_bm)
+def ah_CaL(V): return exp(V, A_CaL_ah, B_CaL_ah, C_CaK_Bh, V0_CaL_ah)
+def bh_CaL(V): return exp(V, A_CaL_bh, B_CaL_bh, 0, V0_CaL_bh)
+def am_H(V):   return exp(V, A_H_am, B_H_am, 0, V0_H_am)
+def taum_KA(V): return exp(V, A_KA_taum, B_KA_taum, C_KA_taum, V0_KA_taum)
+def minf_KA(V): return sig(V, A_KA_minf, B_KA_minf, V0_KA_minf)
+def tauh_KA(V): return 10.8 + 0.03*V + 1 / (57.9 * np.exp(0.127*V) + 0.000134*np.exp(-0.059*V))
+def hinf_KA(V): return sig(V, A_KA_hinf, B_KA_hinf, V0_KA_hinf)
+def am_KC(V):   return KCalpha(V, A_KC_am, B_KC_am, C_KC_am)
+def bm_KC(V):   return KCbeta(V, A_KC_bm, B_KC_bm, C_KC_bm)
 
 # define the currents in the model
-def I_Na(V, m, h): return g_Na * (m**3)* h * (V - E_Na)
-def I_K(V, n): return g_K * (n**4) * (V - E_K)
-def I_l(V): return g_l * (V - E_l)
+def I_NaF(V, m, h): return g_Na * (m**3) * h * (V - E_NaF)
+def I_Kdr(V, m, h): return g_Kdr * (m**4) * h * (V - E_Kdr)
+def I_CaL(V, m, h): return g_CaL * (m**2) * h * (V - E_CaL)
+def I_H(V, m): return g_H * m * (V - E_H)
+def I_KA(V, m, h): return g_KA * (m**3) * h * (V - E_KA)
+def I_KC(V, m): return g_KC * m * (V - E_KC)
 
 # define function that will return time derivatives for integration
 def f(t, y):
