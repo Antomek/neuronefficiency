@@ -80,6 +80,7 @@ def I_CaL(V, m, h): return g_CaL * (m**2) * h * (V - E_CaL)
 def I_H(V, m): return g_H * m * (V - E_H)
 def I_KA(V, m, h): return g_KA * (m**3) * h * (V - E_KA)
 def I_KC(V, m): return g_KC * m * (V - E_KC)
+def I_l(V): return g_l * (V - E_l)
 
 # define function that will return time derivatives for integration
 def f(t, y):
@@ -89,9 +90,11 @@ def f(t, y):
     else:
         I_e = 0
     # set the variables that are to be integrated
-    V, n, m, h = y
+    V, m_NaF, h_NaF, m_Kdr, h_Kdr, m_CaL, h_CaL, m_H, m_KA, h_Ka, m_KC = y
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (I_K(V, n) + I_Na(V, m, h) + I_l(V)))
+    V_dot = 1/C_m * (I_e - (I_NaF(V, m_NaF, h_NaF) + I_Kdr(V, m_Kdr, h_Kdr)
+            + I_CaL(V, m_CaL, h_CaL) + I_H(V, m_H) + I_KA(V, m_KA, h_KA)
+            + I_KC(V, m_KC) + I_l(V)))
     # enter the equations controlling the gating variables.
     n_dot = (n - n_inf(V)) / tau_n(V)
     m_dot = (m - m_inf(V)) / tau_m(V)

@@ -9,10 +9,11 @@ C_m  = 1 # membrane capacitance (uF/cm^2)
 g_Na = 120 # maximum conductances (mS/cm^2)
 g_K  = 36
 g_l  = 0.3
-g_ext = 1000 # large value so that V_dot will follow I_ext quickly
+g_ext = 10*g_Na # large value so that V_dot will follow I_ext quickly
 E_Na = 50 # reversal potentials (mV)
 E_K  = -77
 E_l  = -55
+E_command = 20 # define a desired value of the voltage at which the 'clamp' will keep the 'membrane' fixed
 
 # equations governing opening/closing rates.
 def tau_m(V): return -1/(0.1*(V+40)/(1-np.exp(-(V+40)/10))+4*np.exp(-(V+65)/18))
@@ -27,22 +28,21 @@ def I_Na(V, m, h): return g_Na * (m**3)* h * (V - E_Na)
 def I_K(V, n): return g_K * (n**4) * (V - E_K)
 def I_l(V): return g_l * (V - E_l)
 
+def I_ext(V): return g_ext * (E_command - V)
+
 I_ext_vals = []
 
 # define function that will return time derivatives for integration
 def f(t, y):
     # set the variables that are to be integrated
     V, n, m, h = y
-    # define a desired value of the voltage at which the 'clamp' will keep the 'membrane' fixed
-    V_command = 20
-    I_e = g_ext * (V - V_command)
     # define DV/dt ('_dot' denotes time differentiation)
-    V_dot = 1/C_m * (I_e - (I_K(V, n) + I_Na(V, m, h) + I_l(V)))
+    V_dot = 1/C_m * (I_ext(V) - (I_K(V, n) + I_Na(V, m, h) + I_l(V)))
     # enter the equations controlling the gating variables.
     n_dot = (n - n_inf(V)) / tau_n(V)
     m_dot = (m - m_inf(V)) / tau_m(V)
     h_dot = (h - h_inf(V)) / tau_h(V)
-    I_ext_vals.append(I_e)
+    I_ext_vals.append(I_ext(V))
     return [V_dot, n_dot, m_dot, h_dot]
 
 # enter intial values for V, n, m, h
@@ -69,13 +69,17 @@ h = soln.y[3, :]
 # plot & show solution
 plt.figure(1)
 plt.plot(soln.t, V, 'g') # a V, t plot
+plt.xlabel('Time (ms)')
+plt.ylabel('Voltage (mV)')
 f, (ax1, ax2) = plt.subplots(2, sharex = True)
-ax1.plot(soln.t, I_e, 'b', label='External current')
+ax1.plot(np.linspace(t_interval[0], t_interval[1], len(I_ext_vals)), I_ext_vals, 'b', label='External current')
 ax1.set_xlabel('Time (ms)')
 ax1.set_ylabel('I_ext (uA)')
-ax2.plot(soln.t, I_Na(i,j,k) + I_K(i,l) + I_l(i) for i,j,k,l in zip(V, m, h, n)], 'g', label='Ionic current')
+ax2.plot(soln.t, [I_Na(i,j,k) + I_K(i,l) + I_l(i) for i,j,k,l in zip(V, m, h, n)], 'g', label='Ionic current')
 ax2.set_xlabel('Time (ms)')
 ax2.set_ylabel('I_ion (uA)')
+plt.figure(3)
+plt.plot([I_Na(i,j,k) + I_K(i,l) + I_l(i) for i,j,k,l in zip(V, m, h, n)], V, 'r')
 
 plt.show()
 
