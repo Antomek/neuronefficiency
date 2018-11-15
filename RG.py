@@ -14,17 +14,17 @@ A = 4*np.pi*(5*10**(-4))**2
 g_NaF = 172*10**(-6) / A # maximum conductances (mS/cm^2).
 g_CaL = 2.9*10**(-6) / A
 g_Kdr = 28*10**(-6) / A
-g_KA = 3.6*10**(-6) / A
-g_KC = 56.5*10**(-6) / A
-g_H = 97.1*10**(-6) / A
-g_l = 33
+g_KA =  3.6*10**(-6) / A
+g_KC =  56.5*10**(-6) / A
+g_H =   97.1*10**(-6) / A
+g_l =   0.033
 E_NaF = 55 # reversal potentials (mV)
 E_Kdr  = -90
 E_CaL  = 80
-E_H = -42
-E_KA = -90
-E_KC = -90
-E_l = -65
+E_H =   -42
+E_KA =  -90
+E_KC =  -90
+E_l =   -65
 
 # auxiliary equations as defined in paper
 def exp(V, A, B, C, V_0): return A * np.exp(B * (V - 10 - V_0)) + C
@@ -89,11 +89,12 @@ def I_l(V):             return g_l   * (V - E_l)
 def f(t, y):
     # set external current: make sure it is 0 for large times.
     if 0 <= t <= 15:
-        I_e = 0
+        I_e = 20
     else:
         I_e = 0
     # set the variables that are to be integrated
     V, m_NaF, h_NaF, m_Kdr, h_Kdr, m_CaL, h_CaL, m_H, m_KA, h_KA, m_KC, CA_con = y
+
     # define DV/dt ('_dot' denotes time differentiation)
     V_dot = 1/C_m * (I_e - (I_NaF(V, m_NaF, h_NaF) + I_Kdr(V, m_Kdr, h_Kdr)
             + I_CaL(V, m_CaL, h_CaL) + I_H(V, m_H) + I_KA(V, m_KA, h_KA)
@@ -106,7 +107,7 @@ def f(t, y):
     h_Kdr_dot = ah_Kdr(V) * (1 - h_Kdr) - bh_Kdr(V) * h_Kdr
     m_CaL_dot = am_CaL(V) * (1 - m_CaL) - bm_CaL(V) * m_CaL
     h_CaL_dot = ah_CaL(V) * (1 - h_CaL) - bh_CaL(V) * h_CaL
-    m_H_dot =   am_H(V) * (1 - m_H) - bm_H(V) * m_H
+    m_H_dot  =  am_H(V) * (1 - m_H) - bm_H(V) * m_H
     m_KA_dot = (minf_KA(V) - m_KA) / taum_KA(V)
     h_KA_dot = (hinf_KA(V) - h_KA) / tauh_KA(V)
     m_KC_dot = am_KC(V, CA_con) * (1 - m_KC) - bm_KC(V, CA_con) * m_KC
@@ -115,28 +116,29 @@ def f(t, y):
     return [V_dot, m_NaF_dot, h_NaF_dot, m_Kdr_dot, h_Kdr_dot, m_CaL_dot, h_CaL_dot, m_H_dot, m_KA_dot, h_KA_dot, m_KC_dot, CA_con_dot]
 
 # enter intial values for V, m's, h's etc. (using initialisation m_0 = m_inf(V_0) )
-V_0             = -67
-m_NaF_0         = 1 / (am_NaF(V_0)  + bm_NaF(V_0))
-h_NaF_0         = 1 / (ah_NaF(V_0)  + bh_NaF(V_0))
-m_Kdr_0         = 1 / (am_Kdr(V_0)  + bm_Kdr(V_0))
-h_Kdr_0         = 1 / (ah_Kdr(V_0)  + bh_Kdr(V_0))
-m_CaL_0         = 1 / (am_CaL(V_0)  + bm_CaL(V_0))
-h_CaL_0         = 1 / (ah_CaL(V_0)  + bh_CaL(V_0))
-m_H_0           = 1 / (am_H(V_0)  + bm_H(V_0))
+V_0             = -64
+m_NaF_0         = am_NaF(V_0) / (am_NaF(V_0)  + bm_NaF(V_0))
+h_NaF_0         = ah_NaF(V_0) / (ah_NaF(V_0)  + bh_NaF(V_0))
+m_Kdr_0         = am_Kdr(V_0) / (am_Kdr(V_0)  + bm_Kdr(V_0))
+h_Kdr_0         = ah_Kdr(V_0) / (ah_Kdr(V_0)  + bh_Kdr(V_0))
+m_CaL_0         = am_CaL(V_0) / (am_CaL(V_0)  + bm_CaL(V_0))
+h_CaL_0         = ah_CaL(V_0) / (ah_CaL(V_0)  + bh_CaL(V_0))
+m_H_0           = am_H(V_0)   / (am_H(V_0)  + bm_H(V_0))
 m_KA_0          = minf_KA(V_0)
 h_KA_0          = hinf_KA(V_0)
-CA_con_0        = 75.5*10**(-6)
-m_KC_0          = 1 / (am_KC(V_0, CA_con_0)  + bm_KC(V_0, CA_con_0))
+CA_con_0        = 75.5*(10**(-6))
+m_KC_0          = am_KC(V_0, CA_con_0) / (am_KC(V_0, CA_con_0)  + bm_KC(V_0, CA_con_0))
+
 y_0 = [V_0, m_NaF_0, h_NaF_0, m_Kdr_0, h_Kdr_0, m_CaL_0, h_CaL_0, m_H_0, m_KA_0, h_KA_0, m_KC_0, CA_con_0]
 
 # create timescale. t_interval is the time interval in which to calculate the solution.
 # t_points are the points at which the solution is stored.
-t_interval = (0.0, 2000.0)
+t_interval = (0.0, 100.0)
 numpoints = 1000
 t_points = np.linspace(t_interval[0], t_interval[1], numpoints)
 
 # solve coupled ODEs with scipy's solver
-soln = sp_int.solve_ivp(f, t_interval, y_0, 'BDF')
+soln = sp_int.solve_ivp(f, t_interval, y_0, 'Radau')
 
 V = soln.y[0, :]
 

@@ -10,7 +10,7 @@ import matplotlib
 # Used values of SI from Energy Efficieny paper
 C_m  = 1 # membrane capacitance (uF/cm^2)
 g_NaF = 35 # maximum conductances (mS/cm^2)
-g_NaS = 3
+g_NaS = 3*0.0
 g_KV  = 2
 g_KA  = 14.5
 g_KST = 1.5

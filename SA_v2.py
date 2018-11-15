@@ -29,8 +29,8 @@ def I_l(V): return g_l * (V - E_l)
 # define function that will return time derivatives for integration
 def f(t, y):
     # set external current: make sure it is 0 for large times.
-    if t <= 1:
-        I_e = 50
+    if 10 <= t <= 12:
+        I_e = 20
     else:
         I_e = 0
     # set the variables that are to be integrated
@@ -64,15 +64,27 @@ n = soln.y[1, :]
 m = soln.y[2, :]
 h = soln.y[3, :]
 
+# Compute the Na+ load used during the AP
+Na_current = [I_Na(i,j,k) for i,j,k in zip(V,m,h)]
+# Make sure that we're only integrating over the timeperiod of the AP
+t_i = 10
+t_f = 35
+delta_t = (soln.t[-1] - soln.t[0])/len(soln.t)
+index_ti = (t_i - soln.t[0])/delta_t
+index_tf = (t_f - soln.t[0])/delta_t
+Na_load = sp_int.cumtrapz(Na_current[index_ti : index_tf], initial=0)
+print('Original Na load: {}'.format(Na_load))
+
 # plot & show solution
 plt.figure(1)
 plt.plot(soln.t, V, 'g') # a V, t plot
-f, (ax1, ax2, ax3) = plt.subplots(3, sharex = True)
+plt.axvline(x=t_i, color='red')
+plt.axvline(x=t_f, color='red')
+f, (ax1, ax2) = plt.subplots(2, sharex = True)
 # plt.plot(soln.t, [I_Na(i, j, k) for i,j,k in zip(V, m, h)], 'blue', label='sodium current')
 # plt.plot(soln.t, [I_K(i, j) for i,j in zip(V, n)], 'red', label='potassium current')
 # plt.plot(soln.t, [I_l(i) for i in V], 'green', label='leak current')
-t_i = 0
-t_f = 50
+
 ax1.plot(soln.t[t_i:t_f], [I_Na(i,j,k) + I_K(i,l) + I_l(i) for i,j,k,l in zip(V[t_i:t_f],m[t_i:t_f],h[t_i:t_f],n[t_i:t_f])], 'g', label='Ion currents')
 ax1.set_ylabel('Current (uA)')
 ax1.set_xlabel('Time (ms)')
@@ -81,6 +93,6 @@ ax2.plot(soln.t[t_i:t_f], h[t_i:t_f], 'y', label='h')
 ax2.plot(soln.t[t_i:t_f], n[t_i:t_f], 'r', label='n')
 ax2.set_ylabel('Probability')
 ax2.set_xlabel('Time (ms)')
-ax3.plot(soln.t[t_i:t_f], [-m_i + ((1 - h_i) + n_i) for m_i, h_i, n_i in zip(m[t_i:t_f], h[t_i:t_f], n[t_i:t_f])], label = 'inactivation - activation')
+
 plt.legend()
 plt.show()
